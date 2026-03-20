@@ -1,67 +1,5 @@
-#include <stdio.h>
-#include <string.h>
-#include <time.h>
-#include <stdlib.h>
-#include <windows.h>
-#define HOME_ADVANTAGE 3
-
-
-typedef struct{
-    char pName[30];
-    char tName[30];
-    float avg_pts;
-    float avg_reb;
-    float avg_ast;
-	float sp;
-}player_rank;
-
-typedef struct{
-	int gPlayed;
-	
-	int tPts;
-	int tReb;
-	int tAst;
-	
-	float aPts;
-	float aReb;
-	float aAst;
-}stats;
-
-typedef struct{
-	char[30] lName;
-	int jNum;
-	stats stat;
-} players;
-
-typedef struct{
-	char[30] tName;
-	int win;
-	int loss;
-	players player[5];
-}teams;
-
-typedef struct{
-	int gID;
-	char ht[30];
-	char vt[30];
-	
-	int htIndex;
-	int vtIndex;
-	
-	int htfScore;
-	int vtfScore;
-	
-	int hpPts[5];
-	int vpPts[5];
-	
-	int hpReb[5];
-	int vpReb[5];
-	
-	int hpAst[5];
-	int vpAst[5];
-}recs;
-
-typedef char string[30];
+#include "definitions.c"
+#include "header.h"
 
 int main() {
 	teams team[4];
@@ -81,37 +19,67 @@ int main() {
 		printf(" [1] THE TIP-OFF (SIMULATE GAME)\n");
 		printf(" [2] THE ROAD TO NATIONALS (STANDINGS)\n");
 		printf(" [3] TEAM SCOUTING REPORT (AVERAGES)\n");  
+		printf(" [4] ACE PLAYER DATA (PLAYER STATS)\n");
+		printf(" [5] TOURNAMENT SCOREBOOK (HISTORY)\n");
+		printf(" [6] MVP RACE CANDIDATES\n");
+		printf(" [7] RIVALRY CHECK (HEAD-TO-HEAD)\n");
+		printf(" [8] VIEW BOX SCORE\n");
+		printf(" [9] LEAVE THE COURT (EXIT)\n");
+		printf("==========================================\n");
 		printf("ENTER CHOICE: ");
+		int input = scanf("%d", &choice);
 		
-		if(scanf("%d", &choice) != 1){
-			
+		if(input != 1 || choice < 1 || choice > 9){
+			printf("Invalid Input!\n");
+			while(getchar() != '\n');
+			system("pause");
 		}
 		
-		switch (choice){
-			case 1:
-				simulateGame(team, record, &game_count);
-				break;
-			case 2:
-				
-			case 3:
-				
-			case 4:
-				
-			case 5:
-				
-			case 6:
-			
-			case 7:
-				
-			case 8:
-				
-			case 9:
-				exit = 1;
-				break;
-			default:
-				system("pause");
-				break;
+		else{
+			switch (choice){
+				case 1:
+					simulateGame(team, record, &game_count);
+					break;
+					
+				case 2:
+					standings(team);
+					break;
+					
+				case 3:
+					team_stats(team);
+					break;
+					
+				case 4:
+					player_stats(team);
+					break;
+					
+				case 5:
+					history(record, game_count);
+					system("pause");
+					break;
+					
+				case 6:
+					mvp_race(team);
+					break;
+					
+				case 7:
+					h2h(record, team, game_count);
+					break;
+					
+				case 8:
+					box_scores(record, team, game_count);
+					break;
+					
+				case 9:
+					exit = 1;
+					break;
+					
+				default:
+					system("pause");
+					break;
+			}
 		}
+
 		
 	}while(!exit);
 
