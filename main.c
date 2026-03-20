@@ -5,14 +5,13 @@ int main() {
 	teams team[4];
 	recs record[100];
 	srand(time(NULL));
-	int game_count =  0;   
+	int game_count =  0;
 	loadInitialData(team, record, &game_count);
 	int exit = 0;
 	int choice;	
 
 	do{
 		system("cls");
-		
 		printf("==========================================\n");
 		printf("    KANAGAWA PREFECTURAL CHAMPIONSHIP     \n");
 		printf("==========================================\n");
@@ -79,20 +78,7 @@ int main() {
 					break;
 			}
 		}
-
-		
 	}while(!exit);
 
 	return 0;
 }
-
-
-
-
-
-
-
-
-
-
-
