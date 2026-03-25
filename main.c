@@ -30,7 +30,7 @@ int main() {
 		
 		if(input != 1 || choice < 1 || choice > 9){
 			printf("Invalid Input!\n");
-			while(getchar() != '\n');
+			while(getchar() != '\n'); //clears input buffer 
 			system("pause");
 		}
 		

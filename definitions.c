@@ -5,9 +5,9 @@ void loadInitialData(teams team[], recs record[], int* game_count){
 	fp = fopen("league_data.txt", "r");
 	if(fp != NULL){
 		int i, k;
-		for(i = 0; i < 4; i++){
+		for(i = 0; i < MAX_TEAMS; i++){
 			fscanf(fp, "%s %d %d", team[i].tName, &team[i].win, &team[i].loss);
-			for(k = 0; k < 5; k++){
+			for(k = 0; k < MAX_PLAYERS; k++){
 				fscanf(fp, "%s %d %d %d %d %f %f %f %d", team[i].player[k].lName, &team[i].player[k].jNum, &team[i].player[k].stat.tPts,
 				&team[i].player[k].stat.tReb, &team[i].player[k].stat.tAst, &team[i].player[k].stat.aPts,
 				&team[i].player[k].stat.aReb, &team[i].player[k].stat.aAst, &team[i].player[k].stat.gPlayed);
@@ -27,7 +27,7 @@ void loadInitialData(teams team[], recs record[], int* game_count){
 		while(fscanf(fp2, "%d %s %s %d %d", &record[x].gID, record[x].ht, record[x].vt, &record[x].htfScore, &record[x].vtfScore) == 5){
 			record[x].htIndex = -1;
 			record[x].vtIndex = -1;
-			for(int i = 0; i < 4; i++){
+			for(int i = 0; i < MAX_TEAMS; i++){
 				if(strcmp(record[x].ht, team[i].tName) == 0){
 					record[x].htIndex = i;
 				}
@@ -52,7 +52,7 @@ void loadInitialData(teams team[], recs record[], int* game_count){
 		char b[30];
 		char c[30];
 		for(int j = 0; j < *game_count; j++){
-			for(int k = 0; k < 10; k++){
+			for(int k = 0; k < MAX_PLAYERS * 2; k++){
 				if(k<5){
 					fscanf(fp3, "%d %s %s %d %d %d", &a, b, c, &record[j].hpPts[k], &record[j].hpReb[k], &record[j].hpAst[k]);
 				}
@@ -73,9 +73,9 @@ void update(teams team[], recs record[], int* game_count){
 	FILE *fp;
 	fp = fopen("league_data.txt", "w");
 	if(fp != NULL){
-		for(int i = 0; i < 4; i++){
+		for(int i = 0; i < MAX_TEAMS; i++){
 			fprintf(fp, "%s %d %d\n", team[i].tName, team[i].win, team[i].loss);
-			for(int k = 0; k < 5; k++){
+			for(int k = 0; k < MAX_PLAYERS; k++){
 				fprintf(fp, "%s %d %d %d %d %f %f %f %d\n", team[i].player[k].lName, team[i].player[k].jNum, team[i].player[k].stat.tPts,
 				team[i].player[k].stat.tReb, team[i].player[k].stat.tAst, team[i].player[k].stat.aPts,
 				team[i].player[k].stat.aReb, team[i].player[k].stat.aAst, team[i].player[k].stat.gPlayed);
@@ -104,7 +104,7 @@ void update(teams team[], recs record[], int* game_count){
 	FILE *fp3;
 	fp3 = fopen("box_scores.txt", "a");
 	if(fp3 != NULL){
-		for(int j = 0; j < 10; j++){
+		for(int j = 0; j < MAX_PLAYERS * 2; j++){
 			if(j < 5){
 				fprintf(fp3, "%d %s %s %d %d %d\n", record[*game_count].gID, record[*game_count].ht,
 				team[record[*game_count].htIndex].player[j%5].lName, record[*game_count].hpPts[j%5], record[*game_count].hpReb[j%5], record[*game_count].hpAst[j%5]);
@@ -128,7 +128,7 @@ void simulateGame(teams team[], recs record[], int* game_count){
 	int hPts[5], hReb[5], hAst[5];
 	int vPts[5], vReb[5], vAst[5];
 	
-	for(i = 0; i < 4; i++){
+	for(i = 0; i < MAX_TEAMS; i++){
 		printf("[%d] %s\n", i, team[i].tName);
 	}
 	
@@ -150,9 +150,9 @@ void simulateGame(teams team[], recs record[], int* game_count){
 		printf("Selection: ");
 		scanf("%d", &mode);
 		
-		printf(">>> THE WHISTLE BLOWS: %s VS %s <<<\n", team[home].tName, team[away].tName);
+		printf("\n>>> THE WHISTLE BLOWS: %s VS %s <<<\n", team[home].tName, team[away].tName);
 		if(mode == 1){
-			for(int k = 0; k < 5; k++){
+			for(int k = 0; k < MAX_PLAYERS; k++){
 				printf("%s (Pts Reb Ast): ", team[home].player[k].lName);
 				scanf("%d %d %d", &hPts[k], &hReb[k], &hAst[k]);
 				team[home].player[k].stat.tPts += hPts[k];
@@ -166,7 +166,7 @@ void simulateGame(teams team[], recs record[], int* game_count){
 			}
 			printf("\n");
 			
-			for(int j = 0; j < 5; j++){
+			for(int j = 0; j < MAX_PLAYERS; j++){
 				printf("%s (Pts Reb Ast): ", team[away].player[j].lName);
 				scanf("%d %d %d", &vPts[j], &vReb[j], &vAst[j]);
 				team[away].player[j].stat.tPts += vPts[j];
@@ -180,7 +180,7 @@ void simulateGame(teams team[], recs record[], int* game_count){
 			}
 		}
 		else{
-			for(int x = 0; x < 5; x++){
+			for(int x = 0; x < MAX_PLAYERS; x++){
 				hPts[x] = (rand() % 31 + rand() % 4);
 				if(hPts[x] > 30)
 					hPts[x] = 30;
@@ -208,16 +208,16 @@ void simulateGame(teams team[], recs record[], int* game_count){
 				team[home].player[x].stat.gPlayed++;
 				team[away].player[x].stat.gPlayed++;
 			}
-			for(int y = 0; y < 5; y++){
+			for(int y = 0; y < MAX_PLAYERS; y++){
 				printf("%s: %d Pts, %d Reb, %d Ast\n", team[home].player[y].lName, hPts[y], hReb[y], hAst[y]);
 			}
 			printf("\n");
-			for(int z = 0; z < 5; z++){
+			for(int z = 0; z < MAX_PLAYERS; z++){
 				printf("%s: %d Pts, %d Reb, %d Ast\n", team[away].player[z].lName, vPts[z], vReb[z], vAst[z]);
 			}
 		}
 		
-		for(int b = 0; b < 5; b++){
+		for(int b = 0; b < MAX_PLAYERS; b++){
 			team[home].player[b].stat.aPts = (team[home].player[b].stat.aPts * (team[home].player[b].stat.gPlayed - 1) + hPts[b]) * 1.0 / team[home].player[b].stat.gPlayed;
 			team[home].player[b].stat.aReb = (team[home].player[b].stat.aReb * (team[home].player[b].stat.gPlayed - 1) + hReb[b]) * 1.0 / team[home].player[b].stat.gPlayed;
 			team[home].player[b].stat.aAst = (team[home].player[b].stat.aAst * (team[home].player[b].stat.gPlayed - 1) + hAst[b]) * 1.0 / team[home].player[b].stat.gPlayed;
@@ -226,7 +226,7 @@ void simulateGame(teams team[], recs record[], int* game_count){
 			team[away].player[b].stat.aReb = (team[away].player[b].stat.aReb * (team[away].player[b].stat.gPlayed - 1) + vReb[b]) * 1.0 / team[away].player[b].stat.gPlayed;
 			team[away].player[b].stat.aAst = (team[away].player[b].stat.aAst * (team[away].player[b].stat.gPlayed - 1) + vAst[b]) * 1.0 / team[away].player[b].stat.gPlayed;			
 		}
-		
+		printf("\n--- FINAL BUZZER: %d - %d ---\n", hfs, vfs);
 		if(hfs > vfs){
 			team[home].win++;
 			team[away].loss++;
@@ -237,6 +237,7 @@ void simulateGame(teams team[], recs record[], int* game_count){
 			team[home].loss++;
 			printf("%s Victory!\n", team[away].tName);
 		}
+		printf("\n");
 	
 		record[*game_count].gID = (*game_count) + 1;
 		strcpy(record[*game_count].ht, team[home].tName);
@@ -253,19 +254,39 @@ void standings(teams team[]){
 	system("cls");
 	float winrate[4];
 	teams ranking[4];
-	for (int i = 0; i < 4; i++){
-		winrate[i] = team[i].win * 1.0 / (team[i].win + team[i].loss);
+	for (int i = 0; i < MAX_TEAMS; i++){
 		ranking[i] = team[i];
+		if(team[i].win + team[i].loss == 0){
+			winrate[i] = 0;
+		}
+		else{
+			winrate[i] = team[i].win * 1.0 / (team[i].win + team[i].loss);	
+		}	
 	}
-	sort_teams_float(ranking, winrate, 4);
-
+	for(int j = 0; j < MAX_TEAMS-1; j++){
+		int min = j;
+		for(int k = j+1; k < MAX_TEAMS; k++){
+			if(winrate[k] > winrate[min]){
+				min = k;
+			}
+		}
+		if(min != j){
+			float temp = winrate[j];
+			winrate[j] = winrate[min];
+			winrate[min] = temp;
+			
+			teams temp1 = ranking[j];
+			ranking[j] = ranking[min];
+			ranking[min] = temp1;
+		}
+	}
 	printf("=====================================================\n");
 	printf("                    TEAM STANDINGS                   \n");
 	printf("=====================================================\n");
 	printf("+-------+-----------------+-------+-------+---------+\n");
 	printf("| RANK  | TEAM            | WINS  | LOSS  | WIN %%   |\n");
 	printf("+-------+-----------------+-------+-------+---------+\n");
-	for(int x = 0; x < 4; x++){
+	for(int x = 0; x < MAX_TEAMS; x++){
 		printf("| %-6d| %-16s| %-6d| %-6d| %-6.1f%% |\n", x+1, ranking[x].tName, ranking[x].win, ranking[x].loss, winrate[x] * 100);
 	}
 	printf("+-------+-----------------+-------+-------+---------+\n");
@@ -285,34 +306,37 @@ void team_stats(teams team[]){
 	printf("| TEAM            | AVG PTS | AVG REB | AVG AST |\n");
 	printf("+-----------------+---------+---------+---------+\n");
 	
-	float avg_pts[4] = {0}, avg_reb[4] = {0}, avg_ast[4] = {0};
-	teams ranking[4];
-	for (int i = 0; i < 4; i++){
-		ranking[i] = team[i];
-		for(int k = 0; k < 5; k++){
-			avg_pts[i] += team[i].player[k].stat.aPts;
-			avg_reb[i] += team[i].player[k].stat.aReb;
-			avg_ast[i] += team[i].player[k].stat.aAst;
+//	float avg_pts[4] = {0}, avg_reb[4] = {0}, avg_ast[4] = {0};
+	team_rank ranking[4];
+	for (int i = 0; i < MAX_TEAMS; i++){
+		strcpy(ranking[i].tName, team[i].tName);
+		ranking[i].avg_pts = 0;
+    	ranking[i].avg_reb = 0;
+    	ranking[i].avg_ast = 0;
+		for(int k = 0; k < MAX_PLAYERS; k++){
+			ranking[i].avg_pts += team[i].player[k].stat.aPts;
+			ranking[i].avg_reb += team[i].player[k].stat.aReb;
+			ranking[i].avg_ast += team[i].player[k].stat.aAst;
 		}
 	}	
 	
 	switch(choice){
 		case 1:
-			sort_teams_float(ranking, avg_pts, 4);
+			sort_team(ranking, 1, MAX_TEAMS);
 			break;
 		case 2:
-			sort_teams_float(ranking, avg_reb, 4);
+			sort_team(ranking, 2, MAX_TEAMS);
 			break;
 		case 3:
-			sort_teams_float(ranking, avg_ast, 4);
+			sort_team(ranking, 3, MAX_TEAMS);
 			break;
 		default:
-			sort_teams_str(ranking, 4);
+			sort_team(ranking, 4,  MAX_TEAMS);
 			break;
 	}
 	
-	for(int j = 0; j < 4; j++){
-		printf("| %-16s|%8.2f |%8.2f |%8.2f |\n", ranking[j].tName, avg_pts[j], avg_reb[j], avg_ast[j]);
+	for(int j = 0; j < MAX_TEAMS; j++){
+		printf("| %-16s|%8.2f |%8.2f |%8.2f |\n", ranking[j].tName, ranking[j].avg_pts, ranking[j].avg_reb, ranking[j].avg_ast);
 	}
 	printf("+-----------------+---------+---------+---------+\n");
 	system("pause");
@@ -324,8 +348,8 @@ void player_stats(teams team[]){
 	printf("FILTER: [1]Pts [2]Reb [3]Ast [4]Alpha: ");
 	scanf("%d", &choice);
 	player_rank ranking[20];
-	int count = 5;
-	for(int i = 0; i < 20; i++){
+	int count = 5; //determines how many rows will be displayed
+	for(int i = 0; i < MAX_TEAMS * MAX_PLAYERS; i++){
 		strcpy(ranking[i].pName, team[i/5].player[i%5].lName);
 		strcpy(ranking[i].tName, team[i/5].tName);
 		ranking[i].avg_pts = team[i/5].player[i%5].stat.aPts;
@@ -395,7 +419,7 @@ void mvp_race(teams team[]){
 	printf("================================================\n");
 	printf("+------+----------+---------+------------------+\n");
 	printf("| RANK | PLAYER   | TEAM    | STAT POINTS (SP) |\n");
-	for(int j = 0; j < 5; j++){
+	for(int j = 0; j < MAX_PLAYERS; j++){
 		printf("+------+----------+---------+------------------+\n");
 		printf("| %-5d| %-9s| %-8s| %-17.2f|\n", j+1, ranking[j].pName, ranking[j].tName, ranking[j].sp);
 	}
@@ -403,10 +427,14 @@ void mvp_race(teams team[]){
 	system("pause");
 }
 
+/**
+ * Instead of scanning the history file repeatedly, the file is scanned once at startup and data from the txt file is stored in a struct array which gets updated
+   along with the txt file after every new game is generated.
+*/
 void h2h(recs record[], teams team[], int game_count){
 	system("cls");
 	int i1, i2, win1=0, win2=0, count = 0;
-	int i3[game_count]; //stores indexes in records where the 2 teams fought
+	int i3[100]; //stores indexes in records where the 2 teams fought
 	printf("*** SELECT TEAMS FOR H2H ANALYSIS ***\n");
 	printf("[0] Shohoku\n[1] Kainan\n[2] Ryonan\n[3] Shoyo\n");
 	printf("\n");
@@ -414,39 +442,44 @@ void h2h(recs record[], teams team[], int game_count){
 	scanf("%d", &i1);
 	printf("Select Second Team Index: ");
 	scanf("%d", &i2);
-	if(i1 == i2 || i1 > 3 || i1 < 0 || i2 > 3 || i2 < 0){
+	if(i1 == i2 || i1 >= MAX_TEAMS || i1 < 0 || i2 >= MAX_TEAMS || i2 < 0){
 		printf("[!] Invalid	Selection!\n");
-		system("pause");
 	}
-	printf("\n");
-	for(int i = 0; i < game_count; i++){
-		if((i1 == record[i].htIndex || i1 == record[i].vtIndex) && (i2 == record[i].htIndex || i2 == record[i].vtIndex)){
-			i3[count] = i;
-			count++;
+	else{
+		printf("\n");
+		for(int i = 0; i < game_count; i++){
+			if((i1 == record[i].htIndex || i1 == record[i].vtIndex) && (i2 == record[i].htIndex || i2 == record[i].vtIndex)){
+				i3[count] = i;
+				count++;
+			}
 		}
+		printf("       --- %s VS %s HISTORY ---\n", team[i1].tName, team[i2].tName);
+		printf("+----+-------------+-------------+-------------+\n");
+		printf("| ID | HOME        | AWAY        | SCORE       |\n");
+		printf("+----+-------------+-------------+-------------+\n");
+		for(int j = 0; j < count; j++){
+			if((i1 == record[i3[j]].htIndex && record[i3[j]].htfScore > record[i3[j]].vtfScore)||
+			(i1 == record[i3[j]].vtIndex && record[i3[j]].vtfScore > record[i3[j]].htfScore)){
+				win1++;
+			}
+			else{
+				win2++;
+			}
+			printf("| %-3d| %-12s| %-12s|%5d - %-5d|\n", record[i3[j]].gID, record[i3[j]].ht, record[i3[j]].vt, record[i3[j]].htfScore, record[i3[j]].vtfScore);
+		}
+		printf("+----+-------------+-------------+-------------+\n");
+		printf("\n");
+		printf("SUMMARY:\n");
+		printf(" %-9sWins: %d\n", team[i1].tName, win1);
+		printf(" %-9sWins: %d\n", team[i2].tName, win2);
 	}
-	printf("       --- %s VS %s HISTORY ---\n", team[i1].tName, team[i2].tName);
-	printf("+----+-------------+-------------+-------------+\n");
-	printf("| ID | HOME        | AWAY        | SCORE       |\n");
-	printf("+----+-------------+-------------+-------------+\n");
-	for(int j = 0; j < count; j++){
-		if((i1 == record[i3[j]].htIndex && record[i3[j]].htfScore > record[i3[j]].vtfScore)||
-		(i1 == record[i3[j]].vtIndex && record[i3[j]].vtfScore > record[i3[j]].htfScore)){
-			win1++;
-		}
-		else{
-			win2++;
-		}
-		printf("| %-3d| %-12s| %-12s|%5d - %-5d|\n", record[i3[j]].gID, record[i3[j]].ht, record[i3[j]].vt, record[i3[j]].htfScore, record[i3[j]].vtfScore);
-	}
-	printf("+----+-------------+-------------+-------------+\n");
-	printf("\n");
-	printf("SUMMARY:\n");
-	printf(" %-9sWins: %d\n", team[i1].tName, win1);
-	printf(" %-9sWins: %d\n", team[i2].tName, win2);
 	system("pause");
 }
 
+/**
+ * Instead of scanning the box score file repeatedly, the file is scanned once at startup and data from the txt file is stored in a struct array which gets updated
+   along with the txt file after every new game is generated.
+*/
 void box_scores(recs record[], teams team[], int game_count){
 	system("cls");
 	history(record, game_count);
@@ -498,45 +531,23 @@ void box_scores(recs record[], teams team[], int game_count){
 	system("pause");
 }
 
-void sort_teams_float(teams ranking[], float averages[], int count){
-	for(int j = 0; j < count-1; j++){
-		for(int k = j + 1; k < count; k++){
-			if(averages[j] < averages[k]){
-				float temp;
-				temp = averages[j];
-				averages[j] = averages[k];
-				averages[k] = temp;
-				
-				teams temp1;
-				temp1 = ranking[j];
-				ranking[j] = ranking[k];
-				ranking[k] = temp1;	
-			}
-		}
-	}
-}
+void sort_team(team_rank arr[], int mode, int count){
+    for(int i = 0; i < count-1; i++){
+        for(int j = i+1; j < count; j++){
+            int swap = 0;
 
-void sort_teams_str(teams ranking[], int count){
-	string sort[count];
-	string temp;
-	teams temp1;
-	for(int k = 0; k < count; k++){
-		strcpy(sort[k], ranking[k].tName);
-	}
-	
-	for (int i = 0; i < count; i++){
-		for (int j = i + 1; j < count; j++){
-			if(strcmp(sort[i], sort[j]) > 0){
-				strcpy(temp, sort[i]);
-				strcpy(sort[i], sort[j]);
-				strcpy(sort[j], temp);
-				
-				temp1 = ranking[i];
-				ranking[i] = ranking[j];
-				ranking[j] = temp1;	
-			}
-		}
-	}
+            if(mode == 1 && arr[j].avg_pts > arr[i].avg_pts) swap = 1;
+            else if(mode == 2 && arr[j].avg_reb > arr[i].avg_reb) swap = 1;
+            else if(mode == 3 && arr[j].avg_ast > arr[i].avg_ast) swap = 1;
+            else if(mode == 4 && strcmp(arr[j].tName, arr[i].tName) < 0) swap = 1;
+
+            if(swap){
+                team_rank temp = arr[i];
+                arr[i] = arr[j];
+                arr[j] = temp;
+            }
+        }
+    }
 }
 
 void sort_player(player_rank ranking[], int mode, int count){
