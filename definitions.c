@@ -181,8 +181,19 @@ void simulateGame(teams team[], recs record[], int* game_count){
 		printf("\n>>> THE WHISTLE BLOWS: %s VS %s <<<\n", team[home].tName, team[away].tName);
 		if(mode == 1){
 			for(int k = 0; k < MAX_PLAYERS; k++){
-				printf("%s (Pts Reb Ast): ", team[home].player[k].lName);
-				scanf("%d %d %d", &hPts[k], &hReb[k], &hAst[k]);
+				int input;
+				do{ //handles invalid input
+					printf("%s (Pts Reb Ast): ", team[home].player[k].lName);
+					input = scanf("%d %d %d", &hPts[k], &hReb[k], &hAst[k]);
+					if(input != 3){
+						printf("\nInvalid Input! Please enter non-negative integers.\n");
+						while(getchar() != '\n');
+					}
+					else if(hPts[k] < 0 || hReb[k] < 0 || hAst[k] < 0){
+						printf("\nInvalid Input! Please enter non-negative integers.\n");
+					}
+				}while(input != 3 || hPts[k] < 0 || hReb[k] < 0 || hAst[k] < 0);
+				
 				team[home].player[k].stat.tPts += hPts[k];
 				hfs += hPts[k];
 				team[home].player[k].stat.tReb += hReb[k];
@@ -195,8 +206,19 @@ void simulateGame(teams team[], recs record[], int* game_count){
 			printf("\n");
 			
 			for(int j = 0; j < MAX_PLAYERS; j++){
-				printf("%s (Pts Reb Ast): ", team[away].player[j].lName);
-				scanf("%d %d %d", &vPts[j], &vReb[j], &vAst[j]);
+				int input;
+				do{ //handles invalid input
+					printf("%s (Pts Reb Ast): ", team[away].player[j].lName);
+					input = scanf("%d %d %d", &vPts[j], &vReb[j], &vAst[j]);
+					if(input != 3){
+						printf("\nInvalid Input! Please enter non-negative integers.\n");
+						while(getchar() != '\n');
+					}
+					else if(vPts[j] < 0 || vReb[j] < 0 || vAst[j] < 0){
+						printf("\nInvalid Input! Please enter non-negative integers.\n");
+					}
+				}while(input != 3 || vPts[j] < 0 || vReb[j] < 0 || vAst[j] < 0);
+				
 				team[away].player[j].stat.tPts += vPts[j];
 				vfs += vPts[j];
 				team[away].player[j].stat.tReb += vReb[j];
