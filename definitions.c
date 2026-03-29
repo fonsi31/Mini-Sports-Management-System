@@ -1,5 +1,11 @@
 #include "header.h"
 
+/**
+ * Loads initial team and game data from text files at startup
+ * @param team        Array of team structures to store team and player data
+ * @param record      Array of record structures to store game history and specific details about those games
+ * @param game_count  Pointer to an integer that will store total number of games loaded
+ */
 void loadInitialData(teams team[], recs record[], int* game_count){
 	FILE *fp;
 	fp = fopen("league_data.txt", "r");
@@ -49,8 +55,8 @@ void loadInitialData(teams team[], recs record[], int* game_count){
 	fp3 = fopen("box_scores.txt", "r");
 	if(fp3 != NULL){
 		int a;
-		char b[30];
-		char c[30];
+		char b[30]; //holds data that we dont want to store in our records structs
+		char c[30]; //holds data that we dont want to store in our records structs
 		for(int j = 0; j < *game_count; j++){
 			for(int k = 0; k < MAX_PLAYERS * 2; k++){
 				if(k<5){
@@ -69,6 +75,12 @@ void loadInitialData(teams team[], recs record[], int* game_count){
 	
 }
 
+/**
+ * Updates and appends data to the text files right after every new game is generated
+ * @param team        Array of team structures that stores team and player data
+ * @param record      Array of record structures that stores game history and specific details about those games
+ * @param game_count  Pointer to an integer that that stores total number of games loaded
+ */
 void update(teams team[], recs record[], int* game_count){
 	FILE *fp;
 	fp = fopen("league_data.txt", "w");
@@ -105,7 +117,7 @@ void update(teams team[], recs record[], int* game_count){
 	fp3 = fopen("box_scores.txt", "a");
 	if(fp3 != NULL){
 		for(int j = 0; j < MAX_PLAYERS * 2; j++){
-			if(j < 5){
+			if(j < MAX_PLAYERS){
 				fprintf(fp3, "%d %s %s %d %d %d\n", record[*game_count].gID, record[*game_count].ht,
 				team[record[*game_count].htIndex].player[j%5].lName, record[*game_count].hpPts[j%5], record[*game_count].hpReb[j%5], record[*game_count].hpAst[j%5]);
 			}
@@ -121,6 +133,17 @@ void update(teams team[], recs record[], int* game_count){
 	}
 }
 
+/**
+ * Simulates a new game between two selected teams.
+ *
+ * Allows the user to choose teams and select between manual stat entry
+ * or randomized simulation. Updates team/player statistics and stores
+ * the game result in the record array.
+ *
+ * @param team        Array of team structures storing team and player data
+ * @param record      Array of record structures storing game history
+ * @param game_count  Pointer to total number of games (used as index for new game)
+ */
 void simulateGame(teams team[], recs record[], int* game_count){
 	system("cls");
 	printf("*** THE TIP-OFF: SELECT THE TEAMS ***\n");
@@ -250,6 +273,15 @@ void simulateGame(teams team[], recs record[], int* game_count){
 	system("pause");
 }
 
+/**
+ * Computes the win rate of each team and displays rankings in descending order.
+ *
+ * Calculates win rate as wins / (wins + losses). Teams with no games played
+ * are assigned a win rate of 0. Rankings are determined using a separate
+ * array without modifying the original team order.
+ *
+ * @param team  Array of team structures storing team and player data
+ */
 void standings(teams team[]){
 	system("cls");
 	float winrate[4];
@@ -263,7 +295,7 @@ void standings(teams team[]){
 			winrate[i] = team[i].win * 1.0 / (team[i].win + team[i].loss);	
 		}	
 	}
-	for(int j = 0; j < MAX_TEAMS-1; j++){
+	for(int j = 0; j < MAX_TEAMS-1; j++){//sorts winrate
 		int min = j;
 		for(int k = j+1; k < MAX_TEAMS; k++){
 			if(winrate[k] > winrate[min]){
@@ -293,6 +325,15 @@ void standings(teams team[]){
 	system("pause");
 }
 
+/**
+ * Computes team averages for points, rebounds, and assists.
+ *
+ * Aggregates player statistics to calculate team averages, then displays
+ * rankings in descending order based on a user-selected category
+ * (points, rebounds, assists, or alphabetical order).
+ *
+ * @param team  Array of team structures storing team and player data
+ */
 void team_stats(teams team[]){
 	system("cls");
 	int choice;
@@ -306,7 +347,6 @@ void team_stats(teams team[]){
 	printf("| TEAM            | AVG PTS | AVG REB | AVG AST |\n");
 	printf("+-----------------+---------+---------+---------+\n");
 	
-//	float avg_pts[4] = {0}, avg_reb[4] = {0}, avg_ast[4] = {0};
 	team_rank ranking[4];
 	for (int i = 0; i < MAX_TEAMS; i++){
 		strcpy(ranking[i].tName, team[i].tName);
@@ -342,13 +382,22 @@ void team_stats(teams team[]){
 	system("pause");
 }
 
+/**
+ * Displays player rankings across the league based on a selected category.
+ *
+ * Aggregates all players from every team into a single array, then sorts
+ * them in descending order based on the chosen metric (points, rebounds,
+ * assists, or alphabetical order).
+ *
+ * @param team  Array of team structures storing team and player data
+ */
 void player_stats(teams team[]){
 	system("cls");
 	int choice;
 	printf("FILTER: [1]Pts [2]Reb [3]Ast [4]Alpha: ");
 	scanf("%d", &choice);
 	player_rank ranking[20];
-	int count = 5; //determines how many rows will be displayed
+	int count = MAX_PLAYERS; //determines how many rows will be displayed
 	for(int i = 0; i < MAX_TEAMS * MAX_PLAYERS; i++){
 		strcpy(ranking[i].pName, team[i/5].player[i%5].lName);
 		strcpy(ranking[i].tName, team[i/5].tName);
@@ -368,7 +417,7 @@ void player_stats(teams team[]){
 			break;
 		default:
 			sort_player(ranking, 4, 20);
-			count = 20;
+			count = MAX_PLAYERS * MAX_TEAMS;
 			break;
 	}	
 	printf("==============================================\n");
@@ -384,6 +433,15 @@ void player_stats(teams team[]){
 	system("pause");
 }
 
+/**
+ * Displays all recorded games and their results.
+ *
+ * Iterates through the record array and prints game details,
+ * including teams, final scores, and winners.
+ *
+ * @param record  Array of record structures storing game details
+ * @param count   Total number of games recorded
+ */
 void history(recs record[], int count){
 	system("cls");
 	printf("==================================================\n");
@@ -405,6 +463,15 @@ void history(recs record[], int count){
 	printf("+----+---------+---------+-------------+---------+\n");
 }
 
+/**
+ * Displays MVP rankings based on a weighted performance score.
+ *
+ * Aggregates all players into a single array and computes a score (SP)
+ * using weighted contributions from points, rebounds, and assists.
+ * Players are then ranked in descending order based on this score.
+ *
+ * @param team  Array of team structures storing team and player data
+ */
 void mvp_race(teams team[]){
 	system("cls");
 	player_rank ranking[20];
@@ -428,8 +495,12 @@ void mvp_race(teams team[]){
 }
 
 /**
- * Instead of scanning the history file repeatedly, the file is scanned once at startup and data from the txt file is stored in a struct array which gets updated
-   along with the txt file after every new game is generated.
+ * Displays head-to-head results between two selected teams.
+ * Instead of scanning the history file repeatedly, the file is scanned once at startup and data from the text file is stored in a struct array which gets updated
+   along with the text file after every new game is generated.
+ * @param team        Array of team structures storing team and player data
+ * @param record      Array of record structures storing game history
+ * @param game_count  Pointer to total number of games (used as index for new game)
 */
 void h2h(recs record[], teams team[], int game_count){
 	system("cls");
@@ -443,7 +514,7 @@ void h2h(recs record[], teams team[], int game_count){
 	printf("Select Second Team Index: ");
 	scanf("%d", &i2);
 	if(i1 == i2 || i1 >= MAX_TEAMS || i1 < 0 || i2 >= MAX_TEAMS || i2 < 0){
-		printf("[!] Invalid	Selection!\n");
+		printf("[!] Invalid Selection!\n");
 	}
 	else{
 		printf("\n");
@@ -477,8 +548,12 @@ void h2h(recs record[], teams team[], int game_count){
 }
 
 /**
+ * Displays the box scores in a recorded game selected via input of game ID.
  * Instead of scanning the box score file repeatedly, the file is scanned once at startup and data from the txt file is stored in a struct array which gets updated
    along with the txt file after every new game is generated.
+ * @param team        Array of team structures storing team and player data
+ * @param record      Array of record structures storing game history
+ * @param game_count  Pointer to total number of games (used as index for new game)
 */
 void box_scores(recs record[], teams team[], int game_count){
 	system("cls");
@@ -531,6 +606,20 @@ void box_scores(recs record[], teams team[], int game_count){
 	system("pause");
 }
 
+/**
+ * Sorts teams in descending order based on a selected statistic.
+ *
+ * Uses a comparison-based sorting algorithm to reorder the array
+ * according to the specified mode:
+ *   1 - points
+ *   2 - rebounds
+ *   3 - assists
+ *   4 - alphabetical order (team name)
+ *
+ * @param arr    Array of team_rank structures to be sorted
+ * @param mode   Sorting criterion (see modes above)
+ * @param count  Number of teams in the array
+ */
 void sort_team(team_rank arr[], int mode, int count){
     for(int i = 0; i < count-1; i++){
         for(int j = i+1; j < count; j++){
@@ -550,6 +639,20 @@ void sort_team(team_rank arr[], int mode, int count){
     }
 }
 
+/**
+ * Sorts players in descending order based on a selected statistic.
+ *
+ * Uses a comparison-based sorting algorithm to reorder the array
+ * according to the specified mode:
+ *   1 - points
+ *   2 - rebounds
+ *   3 - assists
+ *   4 - alphabetical order (player name)
+ *
+ * @param ranking  Array of player_rank structures to be sorted
+ * @param mode     Sorting criterion (see modes above)
+ * @param count    Number of players in the array
+ */
 void sort_player(player_rank ranking[], int mode, int count){
 	int swap;
 	player_rank temp;
@@ -575,12 +678,3 @@ void sort_player(player_rank ranking[], int mode, int count){
 		}
 	}
 }
-
-	
-
-
-
-
-
-
-
