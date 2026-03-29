@@ -1,6 +1,23 @@
 #include "definitions.c"
 #include "header.h"
 
+/**
+ * Description      : Basketball League Simulator that manages teams, players,
+ *                    and game records. The program supports game simulation
+ *                    (manual or randomized), team standings, player statistics,
+ *                    MVP ranking, head-to-head analysis, and box score viewing.
+ *                    Data is persistently stored and retrieved from text files.
+ *
+ * Author/s         : Cauilan, Alfonso
+ *                    Abad, Davian
+ *
+ * Section          : S15B
+ *
+ * Last Modified    : March 29, 2026
+ *
+ * Acknowledgements :
+ *                    - Course materials and lectures
+ */
 int main() {
 	teams team[4];
 	recs record[100];
@@ -82,3 +99,15 @@ int main() {
 
 	return 0;
 }
+
+/**
+* This is to certify that this project is my/our own work, based on my/our personal
+* efforts in studying and applying the concepts learned. I/We have constructed the
+* functions and their respective algorithms and corresponding code by myself/ourselves.
+* The program was run, tested, and debugged by my/our own efforts. I/We further certify
+* that I/we have not copied in part or whole or otherwise plagiarized the work of
+* other students and/or persons.
+*
+* Cauilan, Alfonso S. 12504513
+* Abad, Davian
+*/

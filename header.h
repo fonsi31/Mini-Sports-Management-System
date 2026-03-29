@@ -83,8 +83,6 @@ typedef struct{
 	int vpAst[5]; //away/visiting player assists
 }recs;
 
-typedef char string[30];
-
 void loadInitialData(teams team[], recs record[], int* game_count);
 void update(teams team[], recs record[], int* game_count);
 void simulateGame(teams team[], recs record[], int* game_count);
