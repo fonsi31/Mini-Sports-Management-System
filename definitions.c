@@ -156,10 +156,15 @@ void simulateGame(teams team[], recs record[], int* game_count){
 	}
 	
 	printf("Home Index: ");
-	scanf("%d", &home);
+	int input1 = scanf("%d", &home);
 	printf("Away Index: ");
-	scanf("%d", &away);
-	if(home == away || home > 3 || home < 0 || away > 3 || away < 0){
+	int input2 = scanf("%d", &away);
+	
+	if(input1 != 1 || input2 != 1){
+    	printf("\n[!] Invalid input!\n");
+    	while(getchar() != '\n');
+	}
+	else if(home == away || home >= MAX_TEAMS || home < 0 || away >= MAX_TEAMS || away < 0) {
 		printf("[!] Technical Foul: Invalid Selection!\n");
 	}
 	
@@ -505,7 +510,7 @@ void mvp_race(teams team[]){
 void h2h(recs record[], teams team[], int game_count){
 	system("cls");
 	int i1, i2, win1=0, win2=0, count = 0;
-	int i3[100]; //stores indexes in records where the 2 teams fought
+	int i3[200]; //stores indexes in records where the 2 teams fought
 	printf("*** SELECT TEAMS FOR H2H ANALYSIS ***\n");
 	printf("[0] Shohoku\n[1] Kainan\n[2] Ryonan\n[3] Shoyo\n");
 	printf("\n");
